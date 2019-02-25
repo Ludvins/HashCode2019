@@ -5,14 +5,14 @@
 
 struct slice {
   int first_row;
-  int last_row;
   int first_column;
+  int last_row;
   int last_column;
 };
 
 class Pizza {
 
-
+  std::vector<std::vector<bool>> in_slice;
   std::vector<std::vector<char>> pizza_matrix;
   int total_rows, total_columns, ingredients_in_slice, cells_in_slice;
   vector<slices>;
@@ -55,7 +55,7 @@ public:
 
   void calc_slices(){
 
-
+    
 
 
 
