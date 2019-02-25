@@ -55,7 +55,7 @@ public:
 
   // If true is returned this stores the position in row and col,
   // false means there no more avaible positions.
-  bool get_next_avaible_position(int& row, int& col){
+  bool get_next_available_position(int& row, int& col){
 
     for (int i = 0, i < total_rows, ++i){
       for(int j = 0; j < total_columns; ++j){
@@ -74,7 +74,7 @@ public:
   // 1 - Slice has a position already in another slice.
   // 2 - The ammount of ingredients its ok.
   // 3 - Slice is ok
-  int satisfy_constraints(slice s)
+  int satisfies_constraints(slice s)
   {
 
     // If slice bigger than acepted, return false;
@@ -105,9 +105,31 @@ public:
 
   }
 
+  // Sets the positions in the slice as '0'
+  void update_pizza_matrix(Slice s){
+    for ( int i = s.first_row; i <= s.last_row; ++i)
+      for (int j = s.first_column; j <= s.last_column; ++j)
+        pizza_matrix[i][j] = '0';
+  }
+
   void calc_slices(){
 
+    int row,col;
 
+    while(get_next_available_position(row, col)){
+
+      Slice s = {row, col, row, col};
+
+      if(make_largest_valid_slice(s)){
+        slices.push_back(s);
+        update_pizza_matrix(s);
+      }
+
+     
+
+
+
+    }
 
 
 
