@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <cstdlib>
 
 struct slice {
   int first_row;
@@ -12,10 +13,9 @@ struct slice {
 
 class Pizza {
 
-  std::vector<std::vector<bool>> in_slice;
-  std::vector<std::vector<char>> pizza_matrix;
+  std::vector<std::vector<char> pizza_matrix;
   int total_rows, total_columns, ingredients_in_slice, cells_in_slice;
-  vector<slices>;
+  std::vector<slice> slices;
 
 
 public:
@@ -53,9 +53,60 @@ public:
 
   }
 
+  // If true is returned this stores the position in row and col,
+  // false means there no more avaible positions.
+  bool get_next_avaible_position(int& row, int& col){
+
+    for (int i = 0, i < total_rows, ++i){
+      for(int j = 0; j < total_columns; ++j){
+        if(pizza_matrix[i][j] != '0') //Char 0 means the position is already in a slice
+          {
+          row = i;
+          col=j;
+          return true;
+          }
+      }
+    }
+    return false;
+  }
+
+  // 0 - Slice is bigger than accepted.
+  // 1 - Slice has a position already in another slice.
+  // 2 - The ammount of ingredients its ok.
+  // 3 - Slice is ok
+  int satisfy_constraints(slice s)
+  {
+
+    // If slice bigger than acepted, return false;
+    if (((s.last_row - s.first_row + 1) * (s.last_column - s.last_row + 1)) >= cells_in_slice)
+      return 0;
+
+    int num_t = 0, num_m = 0;
+
+    for (int i = s.first_row ; i <= s.last_row; ++i){
+      for(int j = s.first_column; j<= s.last_column; ++j){
+
+        if (pizza_matrix[i][j] == '0') // if any of the cells is already in a slice, return false.
+          return 1;
+
+        if (pizza_matrix[i][j] == 'M')
+          num_m++;
+        else
+          num_t++;
+
+      }
+    }
+
+    // If the number of ingredients isnt enought
+    if (num_m >= ingredients_in_slice && num_t >= ingredients_in_slice) 
+      return 3;
+
+    return 2;
+
+  }
+
   void calc_slices(){
 
-    
 
 
 
