@@ -4,7 +4,7 @@
 #include <vector>
 #include <cstdlib>
 
-struct slice {
+struct Slice {
   int first_row;
   int first_column;
   int last_row;
@@ -13,9 +13,9 @@ struct slice {
 
 class Pizza {
 
-  std::vector<std::vector<char> pizza_matrix;
+  std::vector<std::vector<char>> pizza_matrix;
   int total_rows, total_columns, ingredients_in_slice, cells_in_slice;
-  std::vector<slice> slices;
+  std::vector<Slice> slices;
 
 
 public:
@@ -57,12 +57,12 @@ public:
   // false means there no more avaible positions.
   bool get_next_available_position(int& row, int& col){
 
-    for (int i = 0, i < total_rows, ++i){
+    for (int i = 0; i < total_rows; ++i){
       for(int j = 0; j < total_columns; ++j){
         if(pizza_matrix[i][j] != '0') //Char 0 means the position is already in a slice
           {
           row = i;
-          col=j;
+          col = j;
           return true;
           }
       }
@@ -72,16 +72,20 @@ public:
 
   // 0 - Slice is bigger than accepted.
   // 1 - Slice has a position already in another slice.
-  // 2 - The ammount of ingredients its ok.
-  // 3 - Slice is ok
-  int satisfies_constraints(slice s)
+  // 2 - Slice is ok
+  // 3 - The ammount of ingredients isn't ok.
+  // 4 - Slice is over the margins of the pizza
+  int satisfies_constraints(Slice s)
   {
 
-    // If slice bigger than acepted, return false;
+    if (s.first_row < 0 || s.first_column < 0 || s.last_row >= total_rows || s.last_column >= total_columns)
+      return 4;
+
+    // Check if slice is bigger than accepted;
     if (((s.last_row - s.first_row + 1) * (s.last_column - s.last_row + 1)) >= cells_in_slice)
       return 0;
 
-    int num_t = 0, num_m = 0;
+    int num_t = 0, num_m = 0; //initialice number of tomatoes and mush in the slice.
 
     for (int i = s.first_row ; i <= s.last_row; ++i){
       for(int j = s.first_column; j<= s.last_column; ++j){
@@ -97,10 +101,11 @@ public:
       }
     }
 
-    // If the number of ingredients isnt enought
+    // check the number of ingredients
     if (num_m >= ingredients_in_slice && num_t >= ingredients_in_slice) 
       return 3;
 
+    // Everything is correct, return 2.
     return 2;
 
   }
@@ -112,33 +117,57 @@ public:
         pizza_matrix[i][j] = '0';
   }
 
+  bool get_largest_slice(Slice s){
+
+    int s_c_ret = satisfies_constraints(s);
+
+
+    // Get this switch in a loop (?)
+
+    switch (s_c_ret) {
+
+    case 1:
+      //Slice is over another slice already selected.
+
+      // Check if slice is worth?
+      // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
+
+      break;
+
+    case 2:
+      // Slice is correct
+      return true;
+      break;
+
+    case 3:
+
+      // the number of ingredients isnt enought so we must make it larger ??
+      break;
+
+    case 0:
+    case 4:
+    default:
+
+      // Slice is so bad it cant be helped
+      return false;
+      break;
+  }
+
   void calc_slices(){
 
     int row,col;
 
-    while(get_next_available_position(row, col)){
+    while(get_next_available_position(row, col)){ //While there are available positions
 
-      Slice s = {row, col, row, col};
+      Slice s = {row, col, row, col}; //Construct trivial slice.
 
-      if(make_largest_valid_slice(s)){
+      if(make_largest_slice(s)){ //If the largest slice is valid.
         slices.push_back(s);
         update_pizza_matrix(s);
       }
 
-     
-
-
-
     }
-
-
-
-
-
-
   }
-
-
 };
 
 
