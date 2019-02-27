@@ -33,9 +33,10 @@ struct Slice {
 
 enum constraints_code {
     slice_out_of_pizza_range,
+    size_bigger_than_accepted,
     not_enought_ingredients,
     slice_over_another_slice,
-    slyce_is_ok
+    slice_is_ok
 };
 
 class Pizza {
@@ -94,12 +95,17 @@ class Pizza {
             for(int j = next_col; j < total_columns; ++j){
                 if(!slice_pointer_matrix[i][j]) //nullptr means position isn't in a slice
                 {
-                    next_row = row = i;
-                    next_col = col = j;
+                    row = i;
+                    col = j;
+                    next_row = row+ 1 ;
+                    next_col = col + 1;
+                    std::cout << "Posicion encontrada" << std::endl;
                     return true;
                 }
             }
         }
+        next_col++;
+        next_row++;
         return false;
     }
 
@@ -134,7 +140,7 @@ class Pizza {
             return constraints_code::not_enought_ingredients;
 
         // Everything is correct, return 2.
-        return constraints_code::slyce_is_ok;
+        return constraints_code::slice_is_ok;
 
     }
 
@@ -148,25 +154,29 @@ class Pizza {
     bool make_largest_slice(Slice &s){
 
         // Try every possible size in descendant order
-        for (i = cells_in_slice; i > 0; --i) {
+        for (int i = cells_in_slice; i > 0; --i) {
             std::vector<int> first_half_divs = first_half_divisors(i);
-
+            std::cout << "Divisores calculados" << std::endl;
             for (auto div : first_half_divs ){
                 for (int j = 0; j < 2; ++j){
-                    s.last_row      = (j : i/div ? div);
-                    s.last_column   = (j : div ? i/div);
+                  s.last_row      = (j ? i/div : div);
+                    s.last_column   = (j ? div : i/div);
 
-                    int s_c_ret = satisfies_constraints(s);
-
+                    std::cout << "b" << std::endl;
+                    constraints_code s_c_ret = satisfies_constraints(s);
+                    std::cout << "b" << std::endl;
                     switch (s_c_ret) {
 
                         case slice_over_another_slice:
                             //Slice is over another slice already selected.
 
-                            // Check if slice is worth?
-                            // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
+                          // TODO Check
 
-                            break;
+                          // for (int k = s.first_row; k <= s.last_row; ++k)
+                          //   for (int l = s.first_column; l <= s.last_column; ++l) 
+                          //     slice_pointer_matrix[k][l] = &s;
+
+                          break;
 
                         case slice_is_ok:
                             // Slice is correct
@@ -175,11 +185,14 @@ class Pizza {
 
                         default:
 
+                          break;
                     }
                 }
 
             }
         }
+
+        return false;
     }
 
     void calc_slices(){
@@ -187,7 +200,7 @@ class Pizza {
         int row,col;
 
         while(get_next_available_position(row, col)){ //While there are available positions
-
+          std::cout << "a" << std::endl;
             Slice s = {row, col, row, col}; //Construct trivial slice.
 
             if(make_largest_slice(s)){ //If the largest slice is valid.
@@ -204,6 +217,8 @@ int main (int argc, char** argv) {
     Pizza pizza (argv[1]);
 
     pizza.printf();
+
+    pizza.calc_slices();
 
     return 0;
 }
