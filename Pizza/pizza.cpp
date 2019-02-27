@@ -10,25 +10,20 @@ struct Slice {
   int last_row;
   int last_column;
 };
+
 enum constraints_code {
                        slice_out_of_pizza_range,
-                       size_bigger_than_accepted,
                        not_enought_ingredients,
                        slice_over_another_slice,
                        slyce_is_ok
-
 };
 
 class Pizza {
-
-
-
 
   std::vector<std::vector<char>> pizza_matrix;
   std::vector<std::vector<Slice*>> slice_pointer_matrix;
   int total_rows, total_columns, ingredients_in_slice, cells_in_slice;
   std::vector<Slice> slices;
-
 
 public:
   Pizza(char* filename){
@@ -88,7 +83,6 @@ public:
     return false;
   }
 
-
   constraints_code satisfies_constraints(Slice s)
   {
 
@@ -131,40 +125,30 @@ public:
         slice_pointer_matrix[i][j] = &s;
   }
 
-  bool make_largest_slice(Slice s){
+  bool make_largest_slice(Slice &s){
 
-    int s_c_ret = satisfies_constraints(s);
+    // Try every possible size in descendant order
+    for (i = cells_in_slice; i > 0; --i) {
+        int s_c_ret = satisfies_constraints(s);
 
+        switch (s_c_ret) {
 
-    // Get this switch in a loop (?)
+          case slice_over_another_slice:
+            //Slice is over another slice already selected.
 
-    switch (s_c_ret) {
+            // Check if slice is worth?
+            // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
 
-    case 1:
-      //Slice is over another slice already selected.
+            break;
 
-      // Check if slice is worth?
-      // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
+          case slice_is_ok:
+            // Slice is correct
+            return true;
+            break;
 
-      break;
+          default:
 
-    case 2:
-      // Slice is correct
-      return true;
-      break;
-
-    case 3:
-
-      // the number of ingredients isnt enought so we must make it larger ??
-      break;
-
-    case 0:
-    case 4:
-    default:
-
-      // Slice is so bad it cant be helped
-      return false;
-      break;
+        }
     }
   }
 
@@ -185,16 +169,11 @@ public:
   }
 };
 
-
 int main (int argc, char** argv) {
-
 
   Pizza pizza (argv[1]);
 
   pizza.printf();
-
-
-
 
   return 0;
 }
