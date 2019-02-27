@@ -8,14 +8,15 @@
 // **********************************************************************************
 // Auxiliary functions
 
-// Returns half of the divisors of num in descendent order
-std::vector<int> reverse_half_divisors(int num){
+// Returns first half of the divisors
+// Example: 12 -> 1 2 3
+std::vector<int> first_half_divisors(int num){
     int square_root = (int) sqrt(num) + 1;
     std::vector<int> result;
 
     for (int i = square_root-1; i > 0 ; i++) {
         if (num % i == 0)
-            result.push_back(num/i);
+            result.push_back(i);
     }
 
     return result;
@@ -148,27 +149,33 @@ class Pizza {
 
         // Try every possible size in descendant order
         for (i = cells_in_slice; i > 0; --i) {
-            std::vector<int> half_top_divisors = reverse_half_divisors(i);
-            for (auto div : half_top_divisors){
-                int s_c_ret = satisfies_constraints(s);
+            std::vector<int> first_half_divs = first_half_divisors(i);
 
-                switch (s_c_ret) {
+            for (auto div : first_half_divs ){
+                for (int j = 0; j < 2; ++j){
+                    s.last_row      = (j : i/div ? div);
+                    s.last_column   = (j : div ? i/div);
 
-                    case slice_over_another_slice:
-                        //Slice is over another slice already selected.
+                    int s_c_ret = satisfies_constraints(s);
 
-                        // Check if slice is worth?
-                        // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
+                    switch (s_c_ret) {
 
-                        break;
+                        case slice_over_another_slice:
+                            //Slice is over another slice already selected.
 
-                    case slice_is_ok:
-                        // Slice is correct
-                        return true;
-                        break;
+                            // Check if slice is worth?
+                            // if it is, update the accepted slice, (we dont have a way to know which slice is it, so mmmm)
 
-                    default:
+                            break;
 
+                        case slice_is_ok:
+                            // Slice is correct
+                            return true;
+                            break;
+
+                        default:
+
+                    }
                 }
 
             }
