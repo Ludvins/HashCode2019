@@ -4,19 +4,20 @@
 #include <vector>
 #include <cstdlib>
 #include <cmath>
+#include <set>
 
 struct Photo {
 
   int id;
   bool is_horizontal;
   int number_of_tags;
-  std::vector<std::string> tags;
+  std::set<std::string> tags;
 
   Photo(){
       id = -1;
   }
 
-  Photo(int _id, bool _horizontal, int num_tags, std::vector<std::string>& _tags){
+  Photo(int _id, bool _horizontal, int num_tags, std::set<std::string>& _tags){
     id = _id;
     is_horizontal = _horizontal;
     number_of_tags = num_tags;
@@ -29,7 +30,7 @@ struct Slide {
     bool one_photo;
 
     int id1, id2; //If only one photo, id2 not used
-    std::vector<std::string> tags;
+    std::set<std::string> tags;
 
     Slide(Photo p){
         one_photo = true;
@@ -42,7 +43,7 @@ struct Slide {
         id1 = p1.id;
         id2 = p2.id;
         tags = p1.tags;
-        tags.insert(tags.end(), p2.tags.begin(), p2.tags.end());
+        tags.insert(p2.tags.begin(), p2.tags.end());
     }
 };
 
@@ -60,7 +61,7 @@ class SlideShow{
         bool already_found_v_photo = false;
         Photo saved_v;
         int num_of_tags;
-        std::vector<std::string> tags;
+        std::set<std::string> tags;
         char orientation;
 
         for (int i = 0; i < num_photos; i++){
@@ -69,7 +70,7 @@ class SlideShow{
             for (int j = 0; j < num_of_tags; j++) {
                 std::string tag;
                 input_data >> tag;
-                tags.push_back(tag);
+                tags.insert(tag);
             }
 
             if (orientation == 'H'){
@@ -95,6 +96,25 @@ class SlideShow{
         input_data.close();
     }
 };
+
+int metric(Slide s1, Slide s2){
+
+  int tags_only_in_s1 = 0, tags_only_in_s2 = 0, common_tags = 0;
+
+  for (auto tag : s1.tags){
+    if (s2.tags.find(tag) == s2.tags.end())
+      tags_only_in_s1++;
+    else
+      common_tags++;
+  }
+  for ( auto tag : s2.tags){
+    if(s1.tags.find(tag) == s1.tags.end())
+      tags_only_in_s2++;
+  }
+
+  return std::min(std::min(tags_only_in_s2, tags_only_in_s1), common_tags);
+
+}
 
 
 int main (int argc, char** argv){
