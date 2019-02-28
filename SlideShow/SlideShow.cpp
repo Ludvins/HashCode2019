@@ -29,7 +29,7 @@ struct Photo {
 struct Slide {
     bool one_photo;
 
-    int id1, id2; //If only one photo, id2 not used
+    int id1, id2; // If only one photo, id2 not used
     std::set<std::string> tags;
 
     Slide(Photo p){
@@ -47,7 +47,6 @@ struct Slide {
     }
 };
 
-// **************************************************************************
 int metric(Slide s1, Slide s2){
 
     int tags_only_in_s1 = 0, tags_only_in_s2 = 0, common_tags = 0;
@@ -66,8 +65,6 @@ int metric(Slide s1, Slide s2){
     return std::min(std::min(tags_only_in_s2, tags_only_in_s1), common_tags);
 
 }
-
-// **************************************************************************
 
 class SlideShow{
 
@@ -91,6 +88,7 @@ class SlideShow{
                 tags.clear();
                 input_data >> orientation;
                 input_data >> num_of_tags;
+
                 for (int j = 0; j < num_of_tags; j++) {
                     std::string tag;
                     input_data >> tag;
@@ -120,22 +118,24 @@ class SlideShow{
             input_data.close();
         }
 
+        // Greedy Algorithm with O(n^2) efficiency
         void calculate_slide_show(){
             Slide current_slide = slides[0];
             final_slideshow.push_back(current_slide);
             slides.erase(slides.begin());
+            int a = 0;
+            int total = slides.size();
 
-            //Añadimos a la solucion mientras queden fotos.
             while( !slides.empty() )
             {
+                std::cout << a++ << " de " << total << std::endl;
                 if( slides.size() == 1 )
                 {
-                    final_slideshow.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
+                    final_slideshow.push_back( slides[0] );
                     slides.clear();
                 }
                 else
                 {
-                    //Cogemos la primera opcion y la comparamos con las demas
                     auto best_slide = slides.begin();
                     int best_distance = metric( current_slide, slides[0] );
                     int aux_distance;
@@ -146,9 +146,6 @@ class SlideShow{
                         {
                             best_distance = aux_distance;
                             best_slide = slide_i;
-
-                            if(aux_distance >= 1.0/4 *current_slide.tags.size())
-                            break;
                         }
                     }
 
