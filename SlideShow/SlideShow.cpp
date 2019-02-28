@@ -142,10 +142,13 @@ class SlideShow{
 
                     for(auto slide_i = ++slides.begin(); slide_i != slides.end(); ++slide_i) {
                         aux_distance = metric( current_slide, *slide_i);
-                        if( aux_distance > best_distance )
+                        if( aux_distance > best_distance)
                         {
                             best_distance = aux_distance;
                             best_slide = slide_i;
+
+                            if(aux_distance >= 1.0/4 *current_slide.tags.size())
+                            break;
                         }
                     }
 
@@ -155,13 +158,6 @@ class SlideShow{
                 }
             }
         }
-
-        /* int score(){ */
-        /*     int score = 0; */
-        /*     for (auto slide : final_slideshow){ */
-
-        /*     } */
-        /* } */
 
         void show_slides_vector(){
             std::cout << slides.size() << std::endl;
