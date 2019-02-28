@@ -47,6 +47,28 @@ struct Slide {
     }
 };
 
+// **************************************************************************
+int metric(Slide s1, Slide s2){
+
+    int tags_only_in_s1 = 0, tags_only_in_s2 = 0, common_tags = 0;
+
+    for (auto tag : s1.tags){
+        if (s2.tags.find(tag) == s2.tags.end())
+            tags_only_in_s1++;
+        else
+            common_tags++;
+    }
+    for ( auto tag : s2.tags){
+        if(s1.tags.find(tag) == s1.tags.end())
+            tags_only_in_s2++;
+    }
+
+    return std::min(std::min(tags_only_in_s2, tags_only_in_s1), common_tags);
+
+}
+
+// **************************************************************************
+
 class SlideShow{
 
     public:
@@ -99,8 +121,10 @@ class SlideShow{
 
         void calculate_slide_show(){
 
+            show_slides_vector();
+
             Slide current_slide = slides[0];
-            final_slide_show.push_back(current_slide);
+            final_slideshow.push_back(current_slide);
             slides.erase(slides.begin());
 
             //Añadimos a la solucion mientras queden fotos.
@@ -109,17 +133,20 @@ class SlideShow{
                 if( slides.size() == 1 )
                 {
                     slides.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
+                    slides.clear();
                     std::cout << "  -- Añadida útlima foto." << std::endl;
                 }
                 else
                 {
                     //Cogemos la primera opcion y la comparamos con las demas
                     auto best_slide = slides.begin();
-                    int best_distance = metrica( current_slide, photos[0] );
+                    int best_distance = metric( current_slide, slides[0] );
+                    std::cout << best_distance << std::endl;
                     int aux_distance;
 
                     for(auto slide_i = ++slides.begin(); slide_i != slides.end(); ++slide_i) {
-                        aux_distance = metrica( current_slide, *slide_i);
+                        aux_distance = metric( current_slide, *slide_i);
+                        std::cout << aux_distance << std::endl;
                         if( aux_distance > best_distance )
                         {
                             best_distance = aux_distance;
@@ -127,35 +154,45 @@ class SlideShow{
                         }
                     }
 
-                    final_slide_show.push_back(*best_slide);
+                    final_slideshow.push_back(*best_slide);
                     current_slide = *best_slide;
                     slides.erase(best_slide);
                 }
             }
         }
+
+        void show_slides_vector(){
+            std::cout << final_slideshow.size() << std::endl;
+            for (auto slide : final_slideshow){
+                    if (slide.one_photo)
+                        std::cout << slide.id1 << std::endl;
+                    else
+                        std::cout << slide.id1 << " " << slide.id2 << std::endl;
+            }
+        }
+
+        void write_output_file(){
+            std::fstream output_data("results.txt", std::ios_base::out);
+            if (output_data.is_open()){
+
+                output_data << final_slideshow.size() << std::endl;
+                for (auto slide : final_slideshow){
+                    if (slide.one_photo)
+                        output_data << slide.id1 << std::endl;
+                    else
+                        output_data << slide.id1 << " " << slide.id2 << std::endl;
+                }
+            }
+            else {
+                std::cout << "Error opening file" << std::endl;
+            }
+        }
 };
-
-int metric(Slide s1, Slide s2){
-
-    int tags_only_in_s1 = 0, tags_only_in_s2 = 0, common_tags = 0;
-
-    for (auto tag : s1.tags){
-        if (s2.tags.find(tag) == s2.tags.end())
-            tags_only_in_s1++;
-        else
-            common_tags++;
-    }
-    for ( auto tag : s2.tags){
-        if(s1.tags.find(tag) == s1.tags.end())
-            tags_only_in_s2++;
-    }
-
-    return std::min(std::min(tags_only_in_s2, tags_only_in_s1), common_tags);
-
-}
 
 int main (int argc, char** argv){
     SlideShow slideshow(argv[1]);
+
+    slideshow.calculate_slide_show();
 
     return 0;
 }
