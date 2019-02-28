@@ -35,14 +35,6 @@ struct Slice {
     }
 };
 
-enum constraints_code {
-    slice_out_of_pizza_range,
-    size_bigger_than_accepted,
-    not_enought_ingredients,
-    slice_over_another_slice,
-    slice_is_ok
-};
-
 class Pizza {
 std::vector<std::vector<char>> pizza_matrix;
     std::vector<std::vector<Slice*>> slice_pointer_matrix;
@@ -86,45 +78,43 @@ std::vector<std::vector<char>> pizza_matrix;
             std::cout << std::endl;
         }
 
+
+
     }
 
     // If true is returned this stores the position in row and col,
     // false means there no more avaible positions.
     bool get_next_available_position(int& row, int& col){
-
         static int next_row = 0, next_col = 0;
 
         for (next_row; next_row < total_rows; ++next_row){
             for(next_col; next_col < total_columns; ++next_col){
-                if(!slice_pointer_matrix[next_row][next_col]) //nullptr means position isn't in a slice
+                if(slice_pointer_matrix[next_row][next_col] == nullptr) //nullptr means position isn't in a slice
                 {
                     row = next_row;
                     col = next_col;
 
-                    /* std::cout << next_row << next_col << std::endl; */
                     next_row = next_row + (next_col+1)/total_columns;
                     next_col = (next_col + 1) % total_columns;
-                    /* std::cout << next_row << next_col << std::endl; */
 
-                    /* std::cout << "Next pos: r:" << row << " c:" << col << std::endl; */
                     return true;
                 }
             }
+            next_col = 0;
 
         }
-        /* std::cout << "!Next pos: r:" << row << " c:" << col << std::endl; */
         return false;
     }
 
-    constraints_code satisfies_constraints(Slice s)
+    bool satisfies_constraints(Slice s)
     {
 
         if (s.first_row < 0 || s.first_column < 0 || s.last_row >= total_rows || s.last_column >= total_columns)
-            return constraints_code::slice_out_of_pizza_range;
+            return false;
 
         // Check if slice is bigger than accepted;
         if (s.get_area() > cells_in_slice)
-            return constraints_code::size_bigger_than_accepted;
+            return false;
 
         int num_t = 0, num_m = 0; //initialice number of tomatoes and mush in the slice.
 
@@ -132,7 +122,7 @@ std::vector<std::vector<char>> pizza_matrix;
             for(int j = s.first_column; j<= s.last_column; ++j){
 
                 if (slice_pointer_matrix[i][j]) // if any of the cells is already in a slice, return false.
-                    return constraints_code::slice_over_another_slice;
+                    return false;
 
                 if (pizza_matrix[i][j] == 'M')
                     num_m++;
@@ -144,10 +134,10 @@ std::vector<std::vector<char>> pizza_matrix;
 
         // check the number of ingredients
         if (num_m < ingredients_in_slice || num_t < ingredients_in_slice)
-            return constraints_code::not_enought_ingredients;
+            return false;
 
         // Everything is correct, return 2.
-        return constraints_code::slice_is_ok;
+        return true;
 
     }
 
@@ -167,35 +157,10 @@ std::vector<std::vector<char>> pizza_matrix;
                 for (int j = 0; j < 2; ++j){
                     s.last_row      = s.first_row + (j ? i/div : div) -1;
                     s.last_column   = s.first_column + (j ? div : i/div) -1;
-                    std::cout << std::endl;
 
-                    std::cout << s.first_row << s.last_row << std::endl;
-                    std::cout << s.first_column << s.last_column << std::endl;
+                    if (satisfies_constraints(s))
+                      return true;
 
-                    constraints_code s_c_ret = satisfies_constraints(s);
-                    std::cout << (int) s_c_ret << std::endl;
-                    switch (s_c_ret) {
-
-                        case slice_over_another_slice:
-                            //Slice is over another slice already selected.
-
-                            // TODO Check
-
-                            // for (int k = s.first_row; k <= s.last_row; ++k)
-                            //   for (int l = s.first_column; l <= s.last_column; ++l)
-                            //     slice_pointer_matrix[k][l] = &s;
-
-                            break;
-
-                        case slice_is_ok:
-                            // Slice is correct
-                            return true;
-                            break;
-
-                        default:
-
-                            break;
-                    }
                 }
 
             }
@@ -224,21 +189,41 @@ std::vector<std::vector<char>> pizza_matrix;
         int  area_of_pizza_sliced = 0;
 
         for (auto slice : slices){
-            std::cout <<  slice.first_row << " " << slice.last_row << " " << slice.first_column << " " << slice.last_column << " " << std::endl;
+          //std::cout <<  slice.first_row << " " << slice.last_row << " " << slice.first_column << " " << slice.last_column << " " << std::endl;
             area_of_pizza_sliced += slice.get_area();
         }
 
         return (float) area_of_pizza_sliced / (total_columns * total_rows);
     }
+
+  void write_results_on_file(){
+
+    
+    std::fstream output_data("results.txt", std::ios_base::out);
+    if (output_data.is_open()){
+
+      output_data << slices.size() << std::endl;
+        for (auto slice : slices){
+          output_data <<  slice.first_row << " " << slice.first_column << " " << slice.last_row << " " << slice.last_column << std::endl;
+        }
+
+    }
+
+  }
+
 };
 
 int main (int argc, char** argv) {
 
     Pizza pizza (argv[1]);
 
-    pizza.printf();
+    //pizza.printf();
 
     pizza.calc_slices();
-    std::cout << pizza.show_slices() << std::endl;
+
+    std::cout << "Percentage of pizza sliced: " << pizza.show_slices() << std::endl;
+
+    pizza.write_results_on_file();
+
     return 0;
 }
