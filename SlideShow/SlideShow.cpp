@@ -7,10 +7,10 @@
 
 struct Photo {
 
+  int id;
   bool is_horizontal;
   int number_of_tags;
   std::vector<std::string> tags;
-  int id;
 
   Photo(){
       id = -1;
@@ -26,23 +26,23 @@ struct Photo {
 };
 
 struct Slide {
-    bool one_or_two_photos;
+    bool one_photo;
 
     int id1, id2; //If only one photo, id2 not used
     std::vector<std::string> tags;
 
     Slide(Photo p){
-        one_or_two_photos = 0;
-        id1 = Photo.id;
-        tags = Photo.tags;
+        one_photo = true;
+        id1 = p.id;
+        tags = p.tags;
     }
 
     Slide(Photo p1, Photo p2){
-        one_or_two_photos = 1;
-        id1 = Photo1.id;
-        id2 = Photo2.id;
-        tags = Photo1.tags;
-        tags.insert(tags.end(), Photo2.tags.begin(), Photo2.tags.end())
+        one_photo = false;
+        id1 = p1.id;
+        id2 = p2.id;
+        tags = p1.tags;
+        tags.insert(tags.end(), p2.tags.begin(), p2.tags.end());
     }
 };
 
@@ -58,7 +58,7 @@ class SlideShow{
         input_data >> num_photos;
 
         bool already_found_v_photo = false;
-        Photo saved_v();
+        Photo saved_v;
         int num_of_tags;
         std::vector<std::string> tags;
         char orientation;
@@ -81,8 +81,9 @@ class SlideShow{
                 Photo aux(i, false, num_of_tags, tags);
 
                 if(already_found_v_photo){
-                    Slide s(saved_v, aux)
-                    slides.push_back(s);
+                  Slide s(saved_v, aux);
+
+                  slides.push_back(s);
                 }
                 else{
                     saved_v = aux;
@@ -94,3 +95,17 @@ class SlideShow{
         input_data.close();
     }
 };
+
+
+int main (int argc, char** argv){
+
+  SlideShow slideshow(argv[1]);
+
+
+
+
+
+
+
+  return 0;
+}
