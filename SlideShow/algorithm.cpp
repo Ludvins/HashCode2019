@@ -1,36 +1,33 @@
-
-// Seleccionamos la primera foto
-vector<Photo> photos;
-Photo photoActual = photos[0];
-photos.remove( photoActual );
-
+Slide current_slide = slides[0];
+final_slide_show.push_back(current_slide);
+slides.erase(slides.begin());
 
 //Añadimos a la solucion mientras queden fotos.
-while( ! photos.empty() )
-  {
-    if( photos.size() == 1 )
-      {
-      AddSlide( photos[0] );  //Añade la ultima slide si solo queda 1
-      cout << "  -- Añadida útlima foto." << endl;
-      }
+while( !slides.empty() )
+{
+    if( slides.size() == 1 )
+    {
+        slides.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
+        std::cout << "  -- Añadida útlima foto." << std::endl;
+    }
     else
-      {
+    {
         //Cogemos la primera opcion y la comparamos con las demas
-        int mejor = 0,
-          dMejor = metrica( photoActual, photo ),
-          d;
-        for( int i = 1; i < photos.size() ; ++i )
-          {
-            d = metrica( photoActual, photos[i]);
-            if( d > dMejor )
-              {
-                dMejor = d;
-                mejor = i;
-              }
-          }
+        auto best_slide = slides.begin();
+        int best_distance = metrica( current_slide, photos[0] );
+        int aux_distance;
 
-        addSlide( photos[mejor] );
-        Photo photoActual = photos[mejor];
-        photos.remove( photos[mejor] );
-      }
-  }
+        for(auto slide_i = ++slides.begin(); slide_i != slides.end(); ++slide_i) {
+            aux_distance = metrica( current_slide, *slide_i);
+            if( aux_distance > best_distance )
+            {
+                best_distance = aux_distance;
+                best_slide = slide_i;
+            }
+        }
+
+        final_slide_show.push_back(*best_slide);
+        current_slide = *best_slide;
+        slides.erase(best_slide);
+    }
+}
