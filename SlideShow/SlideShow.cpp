@@ -132,7 +132,6 @@ class SlideShow{
                 {
                     final_slideshow.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
                     slides.clear();
-                    std::cout << "  -- Añadida útlima foto." << std::endl;
                 }
                 else
                 {
