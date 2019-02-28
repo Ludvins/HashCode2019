@@ -51,6 +51,7 @@ class SlideShow{
 
     public:
         std::vector<Slide> slides;
+        std::vector<Slide> final_slideshow;
         int num_photos;
 
         SlideShow(char* filename){
@@ -154,7 +155,6 @@ int metric(Slide s1, Slide s2){
 }
 
 int main (int argc, char** argv){
-
     SlideShow slideshow(argv[1]);
 
     return 0;
