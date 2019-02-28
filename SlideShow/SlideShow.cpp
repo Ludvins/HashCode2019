@@ -1,3 +1,18 @@
+class Photo {
+
+  bool is_horizontal;
+  int number_of_tags;
+  vector<String> tags;
+
+public:
+  Photo(bool _horizontal, int tags, vector<String>& _tags){
+    is_horizontal = _horizontal;
+    number_of_tags = tags;
+    tags = _tags;
+  }
+
+
+
 class SlideShow{
 
     public:
