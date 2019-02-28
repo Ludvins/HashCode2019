@@ -88,6 +88,7 @@ class SlideShow{
             char orientation;
 
             for (int i = 0; i < num_photos; i++){
+                tags.clear();
                 input_data >> orientation;
                 input_data >> num_of_tags;
                 for (int j = 0; j < num_of_tags; j++) {
@@ -120,9 +121,6 @@ class SlideShow{
         }
 
         void calculate_slide_show(){
-
-            show_slides_vector();
-
             Slide current_slide = slides[0];
             final_slideshow.push_back(current_slide);
             slides.erase(slides.begin());
@@ -132,7 +130,7 @@ class SlideShow{
             {
                 if( slides.size() == 1 )
                 {
-                    slides.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
+                    final_slideshow.push_back( slides[0] );  //Añade la ultima slide si solo queda 1
                     slides.clear();
                     std::cout << "  -- Añadida útlima foto." << std::endl;
                 }
@@ -141,12 +139,10 @@ class SlideShow{
                     //Cogemos la primera opcion y la comparamos con las demas
                     auto best_slide = slides.begin();
                     int best_distance = metric( current_slide, slides[0] );
-                    std::cout << best_distance << std::endl;
                     int aux_distance;
 
                     for(auto slide_i = ++slides.begin(); slide_i != slides.end(); ++slide_i) {
                         aux_distance = metric( current_slide, *slide_i);
-                        std::cout << aux_distance << std::endl;
                         if( aux_distance > best_distance )
                         {
                             best_distance = aux_distance;
@@ -162,6 +158,16 @@ class SlideShow{
         }
 
         void show_slides_vector(){
+            std::cout << slides.size() << std::endl;
+            for (auto slide : slides){
+                    if (slide.one_photo)
+                        std::cout << slide.id1 << std::endl;
+                    else
+                        std::cout << slide.id1 << " " << slide.id2 << std::endl;
+            }
+        }
+
+        void show_final_slides_vector(){
             std::cout << final_slideshow.size() << std::endl;
             for (auto slide : final_slideshow){
                     if (slide.one_photo)
@@ -193,6 +199,6 @@ int main (int argc, char** argv){
     SlideShow slideshow(argv[1]);
 
     slideshow.calculate_slide_show();
-
+    slideshow.write_output_file();
     return 0;
 }
