@@ -156,6 +156,13 @@ class SlideShow{
             }
         }
 
+        /* int score(){ */
+        /*     int score = 0; */
+        /*     for (auto slide : final_slideshow){ */
+
+        /*     } */
+        /* } */
+
         void show_slides_vector(){
             std::cout << slides.size() << std::endl;
             for (auto slide : slides){
