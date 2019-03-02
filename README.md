@@ -1,6 +1,6 @@
 # HashCode2019
 
-Pizza Score:
+## Pizza Score:
 a_example: 0.8 of pizza sliced.
 
 b_small: 0.833 of pizza sliced.
@@ -10,7 +10,7 @@ c_medium: 0.9668 of pizza sliced.
 d_big: 0.8852 of pizza sliced.
 
 
-SlideShow Score: 
+## SlideShow Score: 
 
 a_example: 2 points
 
